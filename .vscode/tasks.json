@@ -1,0 +1,24 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Make binaries",
+            "command": "make",
+            "args": [
+                "clean",
+                "parrot"
+            ],
+            "options": {
+                "cwd": "${cwd}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Compile the parrot binary"
+        }
+    ]
+}
