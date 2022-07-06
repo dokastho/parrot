@@ -8,3 +8,6 @@ squawk.o: parrot.c
 
 parrot: main.c squawk.o
 	$(CXX) $(CXXFLAGS) $^ $(LINKFLAGS) -o $@
+
+clean:
+	rm -rf *.o parrot
