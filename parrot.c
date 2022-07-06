@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include "parrot.h"
+#include <stdio.h>
 
 int
 chirp()
