@@ -19,6 +19,38 @@
                 "isDefault": true
             },
             "detail": "Compile the parrot binary"
-        }
+        },
+        {
+            "type": "process",
+            "label": "Parrot Run",
+            "isBackground": true,
+            "command": "./parrot",
+            "args": [],
+            "options": {
+                "cwd": "${cwd}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Start the parrot server",
+            "problemMatcher": [
+                {
+                    "pattern": [
+                        {
+                            "regexp": ".",
+                            "file": 1,
+                            "location": 2,
+                            "message": 3
+                        }
+                    ],
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": ".",
+                        "endsPattern": ".",
+                    }
+                }
+            ]
+        },
     ]
 }
