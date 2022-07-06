@@ -7,6 +7,7 @@
 // global variable declarations
 char term_cache[64][64];
 pthread_mutex_t sock_lock;
+Bird Flock[64];
 
 int main() {
     if (pthread_mutex_init(&sock_lock, NULL) != 0)
