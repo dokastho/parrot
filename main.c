@@ -58,12 +58,8 @@ int main() {
 
     listen(sock, 30);
 
-    // initialize tag keywords
-    if (init())
-    {
-        // error in connecting to other parrots
-        return -1;
-    }
+    // start thread to listen for connections
+    init();
 
     printf("@@@ port %d", port);
     while (1)
