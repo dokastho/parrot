@@ -1,7 +1,7 @@
 #ifndef PARROT
 #define PARROT
 
-#include <pthread.h>
+#define BUF_SIZE 1024
 
 int chirp();
 
