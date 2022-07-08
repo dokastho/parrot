@@ -1,6 +1,7 @@
 #ifndef PARROT
 #define PARROT
 
+#include <pthread.h>
 #define BUF_SIZE 1024
 
 int chirp();
@@ -19,21 +20,23 @@ int init();
 // struct for a Parrot host
 typedef struct {
     int connectionfd;
-    char buffer[1024];
+    char buffer[BUF_SIZE];
 } Bird;
 
-// struct for a connection to send to a Parrot host
+// struct for a msg to send to a Parrot host
 typedef struct {
     char term[64];
-    Bird sender;
+    Bird* sender;
 } Chirp;
 
 // fifo terms passed by command line
 extern char term_cache[64][64];
 
 // mutex for listening for connections
-extern pthread_mutex_t sock_lock;
+extern pthread_mutex_t sock_lock, msg_lock;
 
-extern Bird Flock[64];
+extern Bird flock[64];
+
+extern Chirp msg_cache[64];
 
 #endif

@@ -4,15 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-    {
-        "name": "Docker .NET Core Attach (Preview)",
-        "type": "docker",
-        "request": "attach",
-        "platform": "netCore",
-        "sourceFileMap": {
-            "/src": "${workspaceFolder}"
-        }
-    },
         {
             "name": "(gdb) Launch",
             "type": "cppdbg",
@@ -31,12 +22,11 @@
                     "ignoreFailures": true
                 },
                 {
-                    "description":  "Set Disassembly Flavor to Intel",
+                    "description": "Set Disassembly Flavor to Intel",
                     "text": "-gdb-set disassembly-flavor intel",
                     "ignoreFailures": true
                 }
             ]
         }
-
     ]
 }

@@ -9,8 +9,9 @@
 
 // global variable declarations
 char term_cache[64][64];
-pthread_mutex_t sock_lock;
+pthread_mutex_t sock_lock, msg_lock;
 Bird Flock[64];
+Chirp msg_cache[64];
 
 int main() {
     if (pthread_mutex_init(&sock_lock, NULL) != 0)
@@ -18,6 +19,7 @@ int main() {
         printf("\n mutex init failed\n");
         return 1;
     }
+    
     chirp();
     int port = 0;
 
@@ -61,7 +63,8 @@ int main() {
     // start thread to listen for connections
     init();
 
-    printf("@@@ port %d", port);
+    printf("@@@ port %d\n", port);
+    fflush( stdout );
     while (1)
     {
         int clientsocket = accept(sock, 0, 0);
