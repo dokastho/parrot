@@ -6,13 +6,21 @@
 
 int chirp();
 
-// send len bytes from buf over sock
-int send_bytes(int sock, const char *buf, int len);
+// handle an incoming message
+int handle_connection(int connectionfd);
 
 int get_port_number(int sockfd);
 
 // initialize with other connections
 int init();
+
+// wait for user input
+int
+listen_keys();
+
+// send messages in buffer
+int
+dump_buffer();
 
 // note on structs: Flock array is to hold other connections, Chirp array is to
 // cache messages that have not been replied to
@@ -29,14 +37,24 @@ typedef struct {
     Bird* sender;
 } Chirp;
 
+typedef struct {
+    int read_head;
+    int write_head;
+    void** cache[64];
+} buffer;
+
+void buffer_set(buffer *, void *);
+void* buffer_get(buffer *);
+int buffer_size(buffer *);
+
 // fifo terms passed by command line
 extern char term_cache[64][64];
 
 // mutex for listening for connections
 extern pthread_mutex_t sock_lock, msg_lock;
 
-extern Bird flock[64];
+extern buffer msgs, flock;
 
-extern Chirp msg_cache[64];
+extern int flock_index;
 
 #endif

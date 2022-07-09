@@ -9,9 +9,11 @@
 
 // global variable declarations
 char term_cache[64][64];
-pthread_mutex_t sock_lock, msg_lock;
-Bird Flock[64];
-Chirp msg_cache[64];
+pthread_mutex_t sock_lock;
+pthread_mutex_t msg_lock;
+buffer flock;
+buffer msgs;
+int flock_index = 0;
 
 int main() {
     if (pthread_mutex_init(&sock_lock, NULL) != 0)
@@ -76,6 +78,8 @@ int main() {
         }
 
         // threading comes later...
+
+        pthread_create();
         // std::thread s(handle_connection, clientsocket);
         // s.detach();
     }

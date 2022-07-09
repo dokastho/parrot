@@ -49,6 +49,7 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "cstring": "cpp",
-        "parrot.h": "c"
+        "parrot.h": "c",
+        "in.h": "c"
     }
 }

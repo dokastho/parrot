@@ -6,11 +6,10 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-// connection functions
+// CONNECTION FUNCTIONS
 
 // send len bytes from buf over sock
-int
-send_bytes(int sock, const char *buf, int len)
+int send_bytes(int sock, const char *buf, int len)
 {
     int sent = 0;
     int n = 0;
@@ -22,8 +21,7 @@ send_bytes(int sock, const char *buf, int len)
     return 0;
 }
 
-int
-get_port_number(int sockfd)
+int get_port_number(int sockfd)
 {
     struct sockaddr_in addr;
     socklen_t length = sizeof(addr);
@@ -37,8 +35,7 @@ get_port_number(int sockfd)
     return ntohs(addr.sin_port);
 }
 
-int
-init()
+int init()
 {
     if (pthread_mutex_init(&msg_lock, NULL) != 0)
     {
@@ -47,7 +44,6 @@ init()
     }
     return 0;
 }
-
 
 int handle_connection(int connectionfd)
 {
@@ -59,7 +55,7 @@ int handle_connection(int connectionfd)
     // Call recv() enough times to consume all the data the client sends.
     size_t recvd = 0;
     ssize_t rval;
-    
+
     pthread_mutex_lock(&msg_lock);
 
     do
@@ -75,7 +71,7 @@ int handle_connection(int connectionfd)
         }
         recvd += rval;
     } while (msg_cstr[strlen(msg_cstr)] != '\0'); // old: recv() returns 0 when client closes
-    
+
     pthread_mutex_unlock(&msg_lock);
 
     close(connectionfd);
@@ -100,13 +96,51 @@ int handle_connection(int connectionfd)
     return 0;
 }
 
-// utility functions
+int sendall(Chirp c)
+{
+    for (size_t i = 0; i < ; i++)
+    {
+        /* code */
+    }
+    
+}
 
+// UTILITY FUNCTIONS
 
-// purposeful functions
-int
-chirp()
+// PURPOSEFUL FUNCTIONS
+int chirp()
 {
     printf("squawk 🐣\n");
+    return 0;
+}
+
+int listen_keys()
+{
+    while (1)
+    {
+        Chirp c;
+        printf("> ");
+        fgets(c.term, 64, stdin);
+        // lock
+        buffer_set(&msgs, &c);
+        // signal
+    }
+    return 0;
+}
+
+int dump_buffer()
+{
+    // monitor code goes here
+
+    while (buffer_size(&msgs) != 0)
+    {
+        Chirp* c = buffer_get(&msgs);
+
+
+
+        msgs.read_head++;
+    }
+    msgs.read_head = msgs.write_head = 0;
+
     return 0;
 }
