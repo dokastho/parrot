@@ -1,3 +1,4 @@
+#include "buffer.h"
 #include "parrot.h"
 #include <netinet/in.h>
 #include <stdio.h>
@@ -9,7 +10,8 @@
 // CONNECTION FUNCTIONS
 
 // send len bytes from buf over sock
-int send_bytes(int sock, const char *buf, int len)
+int
+send_bytes(int sock, const char *buf, int len)
 {
     int sent = 0;
     int n = 0;
@@ -21,7 +23,8 @@ int send_bytes(int sock, const char *buf, int len)
     return 0;
 }
 
-int get_port_number(int sockfd)
+int
+get_port_number(int sockfd)
 {
     struct sockaddr_in addr;
     socklen_t length = sizeof(addr);
@@ -35,7 +38,8 @@ int get_port_number(int sockfd)
     return ntohs(addr.sin_port);
 }
 
-int init()
+int
+init()
 {
     if (pthread_mutex_init(&msg_lock, NULL) != 0)
     {
@@ -45,11 +49,12 @@ int init()
     return 0;
 }
 
-int handle_connection(int connectionfd)
+int
+handle_connection(int connectionfd)
 {
     // (1) Receive message from client.
 
-    char msg_cstr[BUF_SIZE];
+    char msg_cstr[MSG_SIZE];
     memset(msg_cstr, 0, sizeof(msg_cstr));
 
     // Call recv() enough times to consume all the data the client sends.
@@ -62,7 +67,7 @@ int handle_connection(int connectionfd)
     {
         // Receive as many additional bytes as we can in one call to recv()
         // (while not exceeding 1024 bytes in total).
-        rval = recv(connectionfd, msg_cstr + recvd, BUF_SIZE - recvd, 0);
+        rval = recv(connectionfd, msg_cstr + recvd, MSG_SIZE - recvd, 0);
         if (rval == -1)
         {
             perror("Error reading stream message");
@@ -80,7 +85,7 @@ int handle_connection(int connectionfd)
 
     // (3) reply (if necessary)
 
-    // char reply[BUF_SIZE] = {'\0'};
+    // char reply[MSG_SIZE] = {'\0'};
     // for (size_t i = 0; i < strlen(response.c_str()); i++)
     // {
     //     reply[i] = response.c_str()[i];
@@ -96,11 +101,13 @@ int handle_connection(int connectionfd)
     return 0;
 }
 
-int sendall(Chirp c)
+int
+sendall(Chirp c)
 {
-    for (size_t i = 0; i < ; i++)
+    for (size_t i = 0; i < buffer_size(&flock); i++)
     {
-        /* code */
+        Bird* b = 
+        
     }
     
 }
@@ -114,7 +121,8 @@ int chirp()
     return 0;
 }
 
-int listen_keys()
+void
+listen_keys()
 {
     while (1)
     {
@@ -125,10 +133,10 @@ int listen_keys()
         buffer_set(&msgs, &c);
         // signal
     }
-    return 0;
 }
 
-int dump_buffer()
+void
+dump_buffer()
 {
     // monitor code goes here
 
@@ -142,5 +150,4 @@ int dump_buffer()
     }
     msgs.read_head = msgs.write_head = 0;
 
-    return 0;
 }

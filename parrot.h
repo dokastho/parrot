@@ -1,8 +1,9 @@
 #ifndef PARROT
 #define PARROT
+#define MSG_SIZE 1024
 
+#include "buffer.h"
 #include <pthread.h>
-#define BUF_SIZE 1024
 
 int chirp();
 
@@ -15,12 +16,10 @@ int get_port_number(int sockfd);
 int init();
 
 // wait for user input
-int
-listen_keys();
+void listen_keys();
 
 // send messages in buffer
-int
-dump_buffer();
+void dump_buffer();
 
 // note on structs: Flock array is to hold other connections, Chirp array is to
 // cache messages that have not been replied to
@@ -28,7 +27,7 @@ dump_buffer();
 // struct for a Parrot host
 typedef struct {
     int connectionfd;
-    char buffer[BUF_SIZE];
+    char charbuf[MSG_SIZE];
 } Bird;
 
 // struct for a msg to send to a Parrot host
@@ -36,16 +35,6 @@ typedef struct {
     char term[64];
     Bird* sender;
 } Chirp;
-
-typedef struct {
-    int read_head;
-    int write_head;
-    void** cache[64];
-} buffer;
-
-void buffer_set(buffer *, void *);
-void* buffer_get(buffer *);
-int buffer_size(buffer *);
 
 // fifo terms passed by command line
 extern char term_cache[64][64];
