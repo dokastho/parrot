@@ -10,8 +10,7 @@
 // CONNECTION FUNCTIONS
 
 // send len bytes from buf over sock
-int
-send_bytes(int sock, const char *buf, int len)
+int send_bytes(int sock, const char *buf, int len)
 {
     int sent = 0;
     int n = 0;
@@ -23,8 +22,7 @@ send_bytes(int sock, const char *buf, int len)
     return 0;
 }
 
-int
-get_port_number(int sockfd)
+int get_port_number(int sockfd)
 {
     struct sockaddr_in addr;
     socklen_t length = sizeof(addr);
@@ -38,19 +36,21 @@ get_port_number(int sockfd)
     return ntohs(addr.sin_port);
 }
 
-int
-init()
+int init()
 {
     if (pthread_mutex_init(&msg_lock, NULL) != 0)
     {
         printf("\n mutex init failed\n");
         return 1;
     }
+    // add current bird to flock
+    buffer_set(&flock, &me);
+
+    // search for other birds
     return 0;
 }
 
-int
-handle_connection(int connectionfd)
+int handle_connection(int connectionfd)
 {
     // (1) Receive message from client.
 
@@ -101,15 +101,23 @@ handle_connection(int connectionfd)
     return 0;
 }
 
-int
-sendall(Chirp c)
+int sendall(Chirp *c)
 {
-    for (size_t i = 0; i < buffer_size(&flock); i++)
+    for (int i = 0; i < buffer_size(&flock); i++)
     {
-        Bird* b = 
-        
+        // get receiver
+        Bird *dest = buffer_read(&flock, i);
+
+        // copy message to receiver
+        strcpy(dest->charbuf, c->term);
+
+        // socket code goes here
+        // don't forget mutex for socket
+        // open current socket & open connection with dest
+        send_bytes(dest->connectionfd, c->term, strlen(c->term));
+        // close
     }
-    
+    return 0;
 }
 
 // UTILITY FUNCTIONS
@@ -121,33 +129,34 @@ int chirp()
     return 0;
 }
 
-void
-listen_keys()
+void listen_keys()
 {
     while (1)
     {
         Chirp c;
         printf("> ");
         fgets(c.term, 64, stdin);
+        c.sender = &me;
         // lock
         buffer_set(&msgs, &c);
         // signal
     }
 }
 
-void
-dump_buffer()
+void dump_buffer()
 {
     // monitor code goes here
 
     while (buffer_size(&msgs) != 0)
     {
-        Chirp* c = buffer_get(&msgs);
+        Chirp *c = buffer_get(&msgs);
 
-
-
-        msgs.read_head++;
+        sendall(c);
     }
     msgs.read_head = msgs.write_head = 0;
+}
 
+// send to the dest all of the known hosts in the flock
+void send_flock()
+{
 }

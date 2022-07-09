@@ -2,7 +2,6 @@
 #define PARROT
 #define MSG_SIZE 1024
 
-#include "buffer.h"
 #include <pthread.h>
 
 int chirp();
@@ -27,6 +26,9 @@ void dump_buffer();
 // struct for a Parrot host
 typedef struct {
     int connectionfd;
+    int port;
+    // ipv4 address
+    char host[15];
     char charbuf[MSG_SIZE];
 } Bird;
 
@@ -45,5 +47,8 @@ extern pthread_mutex_t sock_lock, msg_lock;
 extern buffer msgs, flock;
 
 extern int flock_index;
+
+// bird for this instance of the program
+extern Bird me;
 
 #endif

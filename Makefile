@@ -9,7 +9,7 @@ buffer.o: buffer.c
 squawk.o: parrot.c
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-parrot: main.c squawk.o
+parrot: main.c squawk.o buffer.o
 	$(CXX) $(CXXFLAGS) $^ $(LINKFLAGS) -o $@
 
 clean:
