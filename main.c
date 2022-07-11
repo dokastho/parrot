@@ -64,20 +64,26 @@ int main() {
 
     listen(sock, 30);
 
+    printf("@@@ port %d\n", port);
+
+    me.port = port;
+    me.connectionfd = sock;
+    
     // start thread to listen for connections
     init();
 
-    printf("@@@ port %d\n", port);
     fflush( stdout );
     while (1)
     {
-        int clientsocket = accept(sock, 0, 0);
+        int clientsocket = accept(me.connectionfd, 0, 0);
         if (clientsocket == -1)
         {
             perror("Error accepting connection");
             // exit(1);
             return -1;
         }
+
+        handle_connection(me.connectionfd);
 
         // threading comes later...
 

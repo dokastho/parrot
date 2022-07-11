@@ -11,3 +11,4 @@ void buffer_set(buffer *, void *);
 void* buffer_get(buffer *);
 void* buffer_read(buffer *, int);
 int buffer_size(buffer *);
+// todo: add dynamic growth & figure out ways of wrapping around

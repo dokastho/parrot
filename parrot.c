@@ -6,6 +6,7 @@
 #include <memory.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <netdb.h>
 
 // CONNECTION FUNCTIONS
 
@@ -36,6 +37,37 @@ int get_port_number(int sockfd)
     return ntohs(addr.sin_port);
 }
 
+// Returns hostname for the local computer
+void checkHostName(int hostname)
+{
+    if (hostname == -1)
+    {
+        perror("gethostname");
+        exit(1);
+    }
+}
+  
+// Returns host information corresponding to host name
+void checkHostEntry(struct hostent * hostentry)
+{
+    if (hostentry == NULL)
+    {
+        perror("gethostbyname");
+        exit(1);
+    }
+}
+  
+// Converts space-delimited IPv4 addresses
+// to dotted-decimal format
+void checkIPbuffer(char *IPbuffer)
+{
+    if (NULL == IPbuffer)
+    {
+        perror("inet_ntoa");
+        exit(1);
+    }
+}
+
 int init()
 {
     if (pthread_mutex_init(&msg_lock, NULL) != 0)
@@ -46,7 +78,67 @@ int init()
     // add current bird to flock
     buffer_set(&flock, &me);
 
+    char hostbuffer[256];
+    char *IPbuffer;
+    struct hostent *host_entry;
+    int hostname;
+  
+    // To retrieve hostname
+    hostname = gethostname(hostbuffer, sizeof(hostbuffer));
+    checkHostName(hostname);
+  
+    // To retrieve host information
+    host_entry = gethostbyname(hostbuffer);
+    checkHostEntry(host_entry);
+  
+    // To convert an Internet network
+    // address into ASCII string
+    IPbuffer = inet_ntoa(*((struct in_addr*)host_entry->h_addr_list[0]));
+
+    // todo: add iteration code (append the last 3 numbers of the ipv4 address)
+
     // search for other birds
+    for (int i = 0; i < 0xFF; i++)
+    {
+        struct sockaddr_in addr;
+
+        memset(&addr, 0, sizeof(addr));
+        addr.sin_family = AF_INET;
+        addr.sin_addr.s_addr = htonl(INADDR_ANY);
+        addr.sin_port = htons(i);
+
+        int sock = socket(AF_INET, SOCK_STREAM, 0);
+        if (connect(sock, (struct sockaddr *)&addr, sizeof(addr)) == -1)
+        {
+            continue;
+        };
+
+        // verify connection
+        const char* init_msg = "squawk";
+        send_bytes(sock, init_msg, MSG_SIZE);
+        close(sock);
+
+        // if reply with "squawk, break & add replies to hosts"
+        int clientsocket = accept(me.connectionfd, 0, 0);
+        if (clientsocket == -1)
+        {
+            perror("Error accepting connection");
+            // exit(1);
+            return -1;
+        }
+
+        // verify that the message is a squawk
+        if (handle_connection(me.connectionfd) == -1)
+        {
+            continue;
+        }
+        else
+        {
+            // good connection, adds hosts to the program in handle_connection
+            break;
+        }
+    }
+
     return 0;
 }
 
