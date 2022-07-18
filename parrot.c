@@ -23,6 +23,41 @@ int send_bytes(int sock, const char *buf, int len)
     return 0;
 }
 
+// for case init
+int send_hosts(int dest) {
+    int len = buffer_size(&flock);
+    int msg_size = 16;
+
+    char msg[len * msg_size];
+
+
+    // append hosts to msg str
+    for (int i = 0; i < len; i++)
+    {
+        Bird * b = buffer_read(&flock, i);
+        for (int c = 0; c < msg_size; c++)
+        {
+            int idx = i * msg_size + c;
+            if (c == msg_size)
+            {
+                msg[idx] = ',';
+            }
+            else
+            {
+                msg[idx] = b->host[c];
+            }
+        }
+    }
+    send_bytes(dest, msg, BUF_SIZE); //TODO change buffer size in this case
+}
+
+// for case hosts
+int add_hosts() {}
+
+// for case chirp
+int add_chirp() {}
+
+
 int get_port_number(int sockfd)
 {
     struct sockaddr_in addr;
@@ -142,6 +177,23 @@ int init()
     return 0;
 }
 
+int startswith(const char* str, const char* substr)
+{
+    size_t len = strlen(substr);
+
+    // does str begin with substr?
+    for (size_t i = 0; i < len; i++)
+    {
+        if (str[i] != substr[i])
+        {
+            // str does not begin with substr
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
 int handle_connection(int connectionfd)
 {
     // (1) Receive message from client.
@@ -175,20 +227,65 @@ int handle_connection(int connectionfd)
     // (2) Print out the message
     // lock print
 
-    // (3) reply (if necessary)
+    // verify
+    const char* auth_str = "squawk";
 
-    // char reply[MSG_SIZE] = {'\0'};
-    // for (size_t i = 0; i < strlen(response.c_str()); i++)
-    // {
-    //     reply[i] = response.c_str()[i];
-    // }
+    if (!startswith(msg_cstr, auth_str))
+    {
+        // msg does not begin with "squawk"
+        return -1;
+    }
 
-    // (4) Send reply
+    const char* msg_contents = "";
+    size_t auth_len = strlen(auth_str);
+    size_t msg_len = strlen(msg_cstr) - auth_len;
 
-    // send_bytes(send_sock, reply, MAX_MESSAGE_SIZE);
+    strncpy(msg_contents, msg_cstr[auth_len], msg_len);
+    
+
+    // (4) reply
+    
+    const char init = 'I';
+    const char hosts = 'H';
+    const char chirp = 'C';
+    const char squawk = 'S';
+    
+    switch (msg_contents[0])
+    {
+    case init:
+        /* 
+        reply with hosts
+         */
+        send_hosts(connectionfd);
+        break;
+    case hosts:
+        /* 
+        receive hosts, reply with squawk
+         */
+        add_hosts();
+        break;
+    case chirp:
+        /* 
+        add chirp to the buffer, reply when dumped with contents (if present)
+         */
+        add_chirp();
+        break;
+    case squawk:
+        /* 
+        do nothing, this is a no-op
+        TODO: rethink usefulness of this. it seems like a useless waste of traffic
+         */
+        break;
+    
+    default:
+        /*
+        unrecognized
+         */
+        break;
+    }
 
     // (5) Close connection
-    // close(send_sock);
+    close(connectionfd);
 
     return 0;
 }

@@ -83,7 +83,7 @@ int main() {
             return -1;
         }
 
-        handle_connection(me.connectionfd);
+        handle_connection(clientsocket);
 
         // threading comes later...
 
