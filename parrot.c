@@ -52,7 +52,30 @@ int send_hosts(int dest) {
 }
 
 // for case hosts
-int add_hosts() {}
+int add_hosts(char* s) {
+    // split by comma
+
+    char host[64];
+    int tc = 0;
+    for (size_t i = 0; i < strlen(s); i++)
+    {
+        char c = s[i];
+        if (c == ',')
+        {
+            char buf[MSG_SIZE];
+            Bird b;
+            strcpy(b.host, host);
+            buffer_set(&flock, &b);
+            tc = 0;
+            memset(host, '\0', 64);
+        }
+        else
+        {
+            host[tc] = c;
+            tc++;
+        }
+    }
+}
 
 // for case chirp
 int add_chirp() {}
@@ -262,7 +285,7 @@ int handle_connection(int connectionfd)
         /* 
         receive hosts, reply with squawk
          */
-        add_hosts();
+        add_hosts(msg_contents);
         break;
     case chirp:
         /* 
